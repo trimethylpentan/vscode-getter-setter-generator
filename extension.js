@@ -1,4 +1,6 @@
 const vscode = require('vscode');
+const path = require('path');
+const fs = require('fs');
 
 function activate(context) 
 {
@@ -11,6 +13,7 @@ function activate(context)
 
         var selection = editor.selection;
         var text = editor.document.getText(selection);
+        const extensionName = path.extname(editor.document.fileName).slice(1);
 
         if (text.length < 1)
         {
@@ -20,7 +23,7 @@ function activate(context)
 
         try 
         {
-            var getterAndSetter = createGetterAndSetter(text);
+            var getterAndSetter = createGetterAndSetter(text, extensionName);
 
             editor.edit(
                 edit => editor.selections.forEach(
@@ -49,9 +52,9 @@ function toPascalCase(str)
     return str.replace(/\w+/g,w => w[0].toUpperCase() + w.slice(1));
 }
 
-function createGetterAndSetter(textPorperties)
+function createGetterAndSetter(textProperties, fileType)
 {
-    var properties = textPorperties.split(/\r?\n/).filter(x => x.length > 2).map(x => x.replace(';', ''));
+    var properties = textProperties.split(/\r?\n/).filter(x => x.length > 2).map(x => x.replace(';', ''));
 
     var generatedCode = `
 `;
@@ -61,7 +64,7 @@ function createGetterAndSetter(textPorperties)
         while (p.startsWith("\t")) p = p.substr(1);
 
         let words = p.split(" ").map(x => x.replace(/\r?\n/, ''));
-        let type, attribute, Attribute = "";
+        let type, attribute, pascalCasedAttribute = "";
         let create = false;
         
         // if words == ["private", "String", "name"];
@@ -69,7 +72,7 @@ function createGetterAndSetter(textPorperties)
         {
             type = words[1];
             attribute = words[2];
-            Attribute = toPascalCase(words[2]);
+            pascalCasedAttribute = toPascalCase(words[2]);
 
             create = true;
         }
@@ -78,7 +81,7 @@ function createGetterAndSetter(textPorperties)
         {
             type = words[0];
             attribute = words[1];
-            Attribute = toPascalCase(words[1]);
+            pascalCasedAttribute = toPascalCase(words[1]);
             
             create = true;            
         }
@@ -87,25 +90,33 @@ function createGetterAndSetter(textPorperties)
         {
             type = "Object";
             attribute = words[0];
-            Attribute = toPascalCase(words[0]);
+            pascalCasedAttribute = toPascalCase(words[0]);
             
             create = true;            
         }
 
-        if (create)
-        {
+        if (create) {
+            if (attribute.startsWith('$')) {
+                attribute = attribute.slice(1);
+                pascalCasedAttribute = pascalCasedAttribute.slice(1);
+            }
 
-            let code = 
-`
-\tpublic ${type} ${type.startsWith('bool') ? 'is' : 'get'}${Attribute}() {
-\t\treturn this.${attribute};
-\t}
+            const getterTemplate = path.join(__dirname, 'templates', fileType, 'getter.template');
+            const setterTemplate = path.join(__dirname, 'templates', fileType, 'setter.template');
 
-\tpublic void set${Attribute}(${type} ${attribute}) {
-\t\tthis.${attribute} = ${attribute};
-\t}
-`;
-            generatedCode += code;
+            if (!fs.existsSync(getterTemplate) || !fs.existsSync(setterTemplate)) {
+                vscode.window.showErrorMessage(`Filetype ${fileType} is not supported`);
+            }
+
+            generatedCode += fs.readFileSync(getterTemplate).toString()
+                .replaceAll('{{PROPERTY_NAME_UPPERCASE}}', pascalCasedAttribute)
+                .replaceAll('{{PROPERTY_NAME}}', attribute)
+                .replaceAll('{{PROPERTY_TYPE}}', type);
+
+            generatedCode += fs.readFileSync(setterTemplate).toString()
+                .replaceAll('{{PROPERTY_NAME_UPPERCASE}}', pascalCasedAttribute)
+                .replaceAll('{{PROPERTY_NAME}}', attribute)
+                .replaceAll('{{PROPERTY_TYPE}}', type);
         }
     }
 

@@ -1,39 +1,46 @@
 {
-    "name": "GetterAndSetterGenerator",
-    "displayName": "Getter and Setter Generator",
-    "description": "This extension generate get and set methods from the class variable declarations.",
-    "version": "1.0.3",
-    "publisher": "afmicc",
-    "repository": 
-    {
-        "type": "git",
-        "url": "https://github.com/afmicc/getter-setter-generator"    
-    },
-    "engines": {
-        "vscode": "^1.20.0"
-    },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "onCommand:extension.generateGetterAndSetters"
-    ],
-    "main": "./extension",
-    "contributes": {
-        "commands": [{
-            "command": "extension.generateGetterAndSetters",
-            "title": "Generate get and set methods"
-        }]
-    },
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
-    },
-    "devDependencies": {
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6",
-        "eslint": "^4.11.0",
-        "@types/node": "^7.0.43",
-        "@types/mocha": "^2.2.42"
-    }
+	"name": "GetterAndSetterGenerator",
+	"displayName": "Getter and Setter Generator",
+	"description": "This extension generate get and set methods from the class variable declarations.",
+	"version": "1.0.3",
+	"publisher": "afmicc",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/afmicc/getter-setter-generator"
+	},
+	"engines": {
+		"vscode": "^1.20.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:extension.generateGetterAndSetters"
+	],
+	"main": "./extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "extension.generateGetterAndSetters",
+				"title": "Generate get and set methods"
+			}
+		]
+	},
+	"scripts": {
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "node ./node_modules/vscode/bin/test"
+	},
+	"devDependencies": {
+		"typescript": "^2.6.1",
+		"vscode": "^1.1.6",
+		"eslint": "^4.11.0",
+		"@types/node": "^7.0.43",
+		"@types/mocha": "^2.2.42"
+	},
+	"__metadata": {
+		"id": "860ee701-e00f-4562-a4fb-8ae6ad52513f",
+		"publisherDisplayName": "Agustin Martinez Ibarra",
+		"publisherId": "b04d9321-40b3-4908-92d7-5b9a7e0e18bf",
+		"isPreReleaseVersion": false
+	}
 }
