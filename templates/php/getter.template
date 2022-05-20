@@ -1,0 +1,3 @@
+    public function get{{PROPERTY_NAME_UPPERCASE}}(): {{PROPERTY_TYPE}} {
+        return $this->{{PROPERTY_NAME}};
+    }

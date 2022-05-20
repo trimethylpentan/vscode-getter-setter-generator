@@ -1,0 +1,3 @@
+    public function set{{PROPERTY_NAME_UPPERCASE}}({{PROPERTY_TYPE}} ${{PROPERTY_NAME}}): void {
+        $this->{{PROPERTY_NAME}} = ${{PROPERTY_NAME}};
+    }
