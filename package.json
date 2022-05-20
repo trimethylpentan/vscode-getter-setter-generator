@@ -3,13 +3,13 @@
 	"displayName": "Getter and Setter Generator",
 	"description": "This extension generate get and set methods from the class variable declarations.",
 	"version": "1.0.3",
-	"publisher": "afmicc",
+	"publisher": "trimethylpentan",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/afmicc/getter-setter-generator"
+		"url": "https://github.com/trimethylpentan/vscode-getter-setter-generator"
 	},
 	"engines": {
-		"vscode": "^1.20.0"
+		"vscode": "^1.67.0"
 	},
 	"categories": [
 		"Other"
@@ -17,7 +17,7 @@
 	"activationEvents": [
 		"onCommand:extension.generateGetterAndSetters"
 	],
-	"main": "./extension",
+	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
@@ -27,20 +27,30 @@
 		]
 	},
 	"scripts": {
-		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "node ./node_modules/vscode/bin/test"
+		"vscode:prepublish": "npm run package",
+		"compile": "webpack",
+		"watch": "webpack --watch",
+		"package": "webpack --mode production --devtool hidden-source-map",
+		"compile-tests": "tsc -p . --outDir out",
+		"watch-tests": "tsc -p . -w --outDir out",
+		"pretest": "npm run compile-tests && npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"typescript": "^2.6.1",
-		"vscode": "^1.1.6",
-		"eslint": "^4.11.0",
-		"@types/node": "^7.0.43",
-		"@types/mocha": "^2.2.42"
-	},
-	"__metadata": {
-		"id": "860ee701-e00f-4562-a4fb-8ae6ad52513f",
-		"publisherDisplayName": "Agustin Martinez Ibarra",
-		"publisherId": "b04d9321-40b3-4908-92d7-5b9a7e0e18bf",
-		"isPreReleaseVersion": false
+		"@types/vscode": "^1.67.0",
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^9.1.1",
+		"@types/node": "14.x",
+		"@typescript-eslint/eslint-plugin": "^5.21.0",
+		"@typescript-eslint/parser": "^5.21.0",
+		"eslint": "^8.14.0",
+		"glob": "^8.0.1",
+		"mocha": "^9.2.2",
+		"typescript": "^4.6.4",
+		"ts-loader": "^9.2.8",
+		"webpack": "^5.70.0",
+		"webpack-cli": "^4.9.2",
+		"@vscode/test-electron": "^2.1.3"
 	}
 }
