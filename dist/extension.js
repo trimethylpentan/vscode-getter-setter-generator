@@ -60,8 +60,9 @@ const fs = __webpack_require__(3);
 function activate(context) {
     let disposable = vscode.commands.registerCommand('extension.generateGetterAndSetters', function () {
         const editor = vscode.window.activeTextEditor;
-        if (!editor)
-            return; // No open text editor
+        if (!editor) {
+            return;
+        }
         const selection = editor.selection;
         const text = editor.document.getText(selection);
         const extensionName = path.extname(editor.document.fileName).slice(1);
@@ -89,13 +90,15 @@ function toPascalCase(string) {
     return string.replace(/\w+/g, w => w[0].toUpperCase() + w.slice(1));
 }
 function createGetterAndSetter(textProperties, fileType) {
-    const properties = textProperties.split(/\r?\n/).filter(x => x.length > 2).map(x => x.replace(';', ''));
+    // Split lines and ignore comments
+    const properties = textProperties
+        .split(/\r?\n/)
+        .filter(line => line.length > 2)
+        .map(line => line.replace(';', ''))
+        .filter(line => !line.match(/(\/\/|#|\/\*|\*|\*\/).*/));
     let generatedCode = '\n';
     for (let property of properties) {
-        while (property.startsWith(" "))
-            property = property.slice(1);
-        while (property.startsWith("\t"))
-            property = property.slice(1);
+        property = property.trim();
         let words = property.split(" ").map(x => x.replace(/\r?\n/, ''));
         let type = '';
         let attribute = '';
@@ -106,7 +109,7 @@ function createGetterAndSetter(textProperties, fileType) {
             generatedCode += generateCode(attribute, type, fileType);
         }
         // if words == ["String", "name"];
-        else if (words.length == 2) {
+        else if (words.length === 2) {
             type = words[0];
             attribute = words[1];
             generatedCode += generateCode(attribute, type, fileType);
@@ -144,7 +147,6 @@ function generateCode(attribute, type, fileType) {
 // this method is called when your extension is deactivated
 function deactivate() { }
 exports.deactivate = deactivate;
-console.log('Test');
 
 })();
 
