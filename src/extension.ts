@@ -7,8 +7,9 @@ export function activate(context: vscode.ExtensionContext): void
     let disposable = vscode.commands.registerCommand('extension.generateGetterAndSetters', function ()
     {
         const editor = vscode.window.activeTextEditor;
-        if (!editor)
-            return; // No open text editor
+        if (!editor) {
+            return;
+        }
 
         const selection = editor.selection;
         const text = editor.document.getText(selection);
@@ -53,13 +54,17 @@ function toPascalCase(string: string)
 
 function createGetterAndSetter(textProperties: string, fileType: string)
 {
-    const properties = textProperties.split(/\r?\n/).filter(x => x.length > 2).map(x => x.replace(';', ''));
+    // Split lines and ignore comments
+    const properties = textProperties
+        .split(/\r?\n/)
+        .filter(line => line.length > 2)
+        .map(line => line.replace(';', ''))
+        .filter(line => !line.match(/(\/\/|#|\/\*|\*|\*\/).*/));
 
     let generatedCode = '\n';
     for (let property of properties)
     {
-        while (property.startsWith(" ")) property = property.slice(1);
-        while (property.startsWith("\t")) property = property.slice(1);
+        property = property.trim();
 
         let words = property.split(" ").map(x => x.replace(/\r?\n/, ''));
         let type = '';
@@ -75,7 +80,7 @@ function createGetterAndSetter(textProperties: string, fileType: string)
 
         }
         // if words == ["String", "name"];
-        else if (words.length == 2)
+        else if (words.length === 2)
         {
             type = words[0];
             attribute = words[1];
@@ -127,6 +132,3 @@ function generateCode(attribute: string, type: string, fileType: string): string
 
 // this method is called when your extension is deactivated
 export function deactivate() { }
-
-console.log('Test');
-
